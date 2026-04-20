@@ -5,7 +5,7 @@ import type { ApplicationStatus, AssistantRole } from '../../types';
 import {
   ArrowLeft, CheckCircle, XCircle, Clock, Users, Crown,
   ChevronDown, BookOpen, Briefcase, Heart, Code, HelpCircle,
-  ExternalLink, Phone, Lock, Unlock,
+  ExternalLink, Phone, Lock, Unlock, ArrowUpDown,
 } from 'lucide-react';
 
 const statusCfg: Record<ApplicationStatus, { label: string; color: string; icon: React.ElementType }> = {
@@ -21,6 +21,7 @@ export default function GestionAyudantia() {
   const { ayudantias, courses, users, studentProfiles, applications, updateApplicationStatus, assignCoordinatorRole, closeAyudantia, reopenAyudantia } = useStore();
 
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'recent' | 'gpaHigh' | 'gpaLow' | 'name'>('recent');
 
   const foundAy = ayudantias.find(a => a.id === id);
   if (!foundAy) return (
@@ -32,8 +33,30 @@ export default function GestionAyudantia() {
   const ay = foundAy;
 
   const course = courses.find(c => c.id === ay.courseId);
-  const appList = applications.filter(a => a.ayudantiaId === ay.id)
+  let appList = applications.filter(a => a.ayudantiaId === ay.id)
     .sort((a, b) => b.appliedAt.localeCompare(a.appliedAt));
+
+  // Apply sorting based on sortBy state
+  if (sortBy === 'gpaHigh') {
+    appList = appList.sort((a, b) => {
+      const profileA = studentProfiles.find(p => p.userId === a.studentId);
+      const profileB = studentProfiles.find(p => p.userId === b.studentId);
+      return (profileB?.gpa ?? 0) - (profileA?.gpa ?? 0);
+    });
+  } else if (sortBy === 'gpaLow') {
+    appList = appList.sort((a, b) => {
+      const profileA = studentProfiles.find(p => p.userId === a.studentId);
+      const profileB = studentProfiles.find(p => p.userId === b.studentId);
+      return (profileA?.gpa ?? 0) - (profileB?.gpa ?? 0);
+    });
+  } else if (sortBy === 'name') {
+    appList = appList.sort((a, b) => {
+      const userA = users.find(u => u.id === a.studentId);
+      const userB = users.find(u => u.id === b.studentId);
+      return (userA?.name ?? '').localeCompare(userB?.name ?? '');
+    });
+  }
+  // 'recent' is already sorted from above
 
   const acceptedCount = ay.assignedStudents.length;
   const canAssignCoordinator = acceptedCount >= 3;
@@ -123,9 +146,26 @@ export default function GestionAyudantia() {
 
       {/* Applications */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-900">Postulaciones</h2>
-          {appList.length === 0 && <p className="text-sm text-gray-400 mt-0.5">Aún no hay postulaciones.</p>}
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div>
+            <h2 className="font-semibold text-gray-900">Postulaciones</h2>
+            {appList.length === 0 && <p className="text-sm text-gray-400 mt-0.5">Aún no hay postulaciones.</p>}
+          </div>
+          {appList.length > 0 && (
+            <div className="flex items-center gap-2">
+              <ArrowUpDown size={16} className="text-gray-400" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'recent' | 'gpaHigh' | 'gpaLow' | 'name')}
+                className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 bg-white hover:border-gray-300 transition-colors"
+              >
+                <option value="recent">Más recientes</option>
+                <option value="gpaHigh">Promedio más alto</option>
+                <option value="gpaLow">Promedio más bajo</option>
+                <option value="name">Nombre (A-Z)</option>
+              </select>
+            </div>
+          )}
         </div>
 
         {appList.length === 0 ? (
