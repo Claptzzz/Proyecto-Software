@@ -119,6 +119,7 @@ interface AppState {
   applications: Application[];
 
   login: (email: string, password: string) => boolean;
+  loginWithGoogle: (role: UserRole) => boolean;
   logout: () => void;
   register: (data: {
     email: string; password: string; name: string; role: UserRole;
@@ -154,6 +155,12 @@ export const useStore = create<AppState>()(
         const user = get().users.find(
           u => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
         );
+        if (user) { set({ currentUser: user }); return true; }
+        return false;
+      },
+
+      loginWithGoogle: (role) => {
+        const user = get().users.find(u => u.role === role);
         if (user) { set({ currentUser: user }); return true; }
         return false;
       },
