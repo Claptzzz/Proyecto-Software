@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useStore } from '../../store';
 import {
   FileText, Clock, CheckCircle, XCircle, Search, ChevronRight,
-  UserCircle, Sparkles, GraduationCap, ArrowUpRight,
+  UserCircle, GraduationCap, ArrowUpRight,
 } from 'lucide-react';
 import ucnShield from '../../assets/LogoUCN_acentuado.png';
 import escuelaLogo from '../../assets/Logo Escuela Ingeniería.svg';
@@ -125,10 +125,6 @@ export default function StudentDashboard() {
             <div className="hidden lg:block w-px self-stretch bg-white/10" aria-hidden="true" />
 
             <div className="flex-1 min-w-0">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/8 border border-white/10 text-[11px] font-semibold tracking-wider uppercase text-[#7E9BC0] mb-3">
-                <Sparkles size={12} />
-                Panel del estudiante
-              </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">
                 Bienvenido/a,{' '}
                 <span className="bg-gradient-to-r from-[#7E9BC0] to-[#CAA987] bg-clip-text text-transparent">
