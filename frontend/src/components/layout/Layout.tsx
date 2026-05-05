@@ -17,13 +17,28 @@ const professorLinks = [
   { to: '/profesor/ramos', label: 'Mis Ramos', icon: BookOpen },
 ];
 
+const adminLinks = [
+  { to: '/admin/dashboard', label: 'Panel Control', icon: LayoutDashboard },
+];
+
 export default function Layout() {
   const { currentUser, logout } = useStore();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const links = currentUser?.role === 'student' ? studentLinks : professorLinks;
-  const roleLabel = currentUser?.role === 'student' ? 'Estudiante' : 'Profesor/a';
+  const links = (() => {
+    if (currentUser?.role === 'student') return studentLinks;
+    if (currentUser?.role === 'professor') return professorLinks;
+    if (currentUser?.role === 'admin') return adminLinks;
+    return [];
+  })();
+
+  const roleLabel = (() => {
+    if (currentUser?.role === 'student') return 'Estudiante';
+    if (currentUser?.role === 'professor') return 'Profesor/a';
+    if (currentUser?.role === 'admin') return 'Administrador';
+    return '';
+  })();
   const initials = currentUser?.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() ?? '?';
 
   function handleLogout() {

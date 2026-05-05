@@ -37,7 +37,10 @@ export default function Login() {
 
   function goToDashboard() {
     const user = useStore.getState().currentUser;
-    navigate(user?.role === 'student' ? '/student/dashboard' : '/profesor/dashboard');
+    if (user?.role === 'student') navigate('/student/dashboard');
+    else if (user?.role === 'professor') navigate('/profesor/dashboard');
+    else if (user?.role === 'admin') navigate('/admin/dashboard');
+    else navigate('/');
   }
 
   function handleSubmit(e: { preventDefault(): void }) {

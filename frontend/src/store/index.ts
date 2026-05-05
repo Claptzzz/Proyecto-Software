@@ -9,6 +9,7 @@ import type {
 // ─── Mock Data ───────────────────────────────────────────────────────────────
 
 const MOCK_USERS: User[] = [
+  { id: 'admin-1', email: 'admin@ucn.cl', password: 'adminpassword', role: 'admin', name: 'Administrador Central', createdAt: '2024-01-01T00:00:00Z' },
   { id: 'prof-1', email: 'carlos.perez@ucn.cl', password: 'password123', role: 'professor', name: 'Dr. Carlos Pérez', createdAt: '2024-01-15T00:00:00Z' },
   { id: 'prof-2', email: 'maria.gonzalez@ucn.cl', password: 'password123', role: 'professor', name: 'Dra. María González', createdAt: '2024-01-15T00:00:00Z' },
   { id: 'student-1', email: 'juan.rodriguez@alumnos.ucn.cl', password: 'password123', role: 'student', name: 'Juan Rodríguez', createdAt: '2024-03-01T00:00:00Z' },
