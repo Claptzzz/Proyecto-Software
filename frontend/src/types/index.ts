@@ -1,4 +1,4 @@
-export type UserRole = 'student' | 'professor';
+export type UserRole = 'student' | 'professor' | 'admin';
 export type ApplicationStatus = 'pending' | 'accepted' | 'rejected';
 export type AyudantiaStatus = 'open' | 'closed';
 export type ExperienceType = 'ayudantia' | 'voluntariado' | 'trabajo' | 'proyecto' | 'otro';

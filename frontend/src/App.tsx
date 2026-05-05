@@ -12,24 +12,48 @@ import ProfessorDashboard from './pages/professor/Dashboard';
 import MisRamos from './pages/professor/MisRamos';
 import GestionAyudantia from './pages/professor/GestionAyudantia';
 
+import AdminDashboard from './pages/admin/dashboard';
+
 function RequireStudent() {
   const currentUser = useStore(s => s.currentUser);
   if (!currentUser) return <Navigate to="/login" replace />;
-  if (currentUser.role !== 'student') return <Navigate to="/profesor/dashboard" replace />;
+  if (currentUser.role !== 'student') {
+    const target = currentUser.role === 'professor' ? '/profesor/dashboard' : '/admin/dashboard';
+    return <Navigate to={target} replace />;
+  }
   return <Outlet />;
 }
 
 function RequireProfessor() {
   const currentUser = useStore(s => s.currentUser);
   if (!currentUser) return <Navigate to="/login" replace />;
-  if (currentUser.role !== 'professor') return <Navigate to="/student/dashboard" replace />;
+  if (currentUser.role !== 'professor') {
+    const target = currentUser.role === 'student' ? '/student/dashboard' : '/admin/dashboard';
+    return <Navigate to={target} replace />;
+  }
+  return <Outlet />;
+}
+
+function RequireAdmin() {
+  const currentUser = useStore(s => s.currentUser);
+  if (!currentUser) return <Navigate to="/login" replace />;
+  if (currentUser.role !== 'admin') {
+    const target = currentUser.role === 'student' ? '/student/dashboard' : '/profesor/dashboard';
+    return <Navigate to={target} replace />;
+  }
   return <Outlet />;
 }
 
 function RedirectIfLoggedIn({ to }: { to?: string }) {
   const currentUser = useStore(s => s.currentUser);
   if (currentUser) {
-    return <Navigate to={to ?? (currentUser.role === 'student' ? '/student/dashboard' : '/profesor/dashboard')} replace />;
+    let target = to;
+    if (!target) {
+      if (currentUser.role === 'student') target = '/student/dashboard';
+      else if (currentUser.role === 'professor') target = '/profesor/dashboard';
+      else target = '/admin/dashboard';
+    }
+    return <Navigate to={target} replace />;
   }
   return <Outlet />;
 }
@@ -72,6 +96,20 @@ const router = createBrowserRouter([
           { path: 'dashboard', element: <ProfessorDashboard /> },
           { path: 'ramos', element: <MisRamos /> },
           { path: 'ayudantia/:id', element: <GestionAyudantia /> },
+        ],
+      },
+    ],
+  },
+
+  {
+    element: <RequireAdmin />,
+    children: [
+      {
+        path: '/admin',
+        element: <Layout />,
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: 'dashboard', element: <AdminDashboard /> },
         ],
       },
     ],
