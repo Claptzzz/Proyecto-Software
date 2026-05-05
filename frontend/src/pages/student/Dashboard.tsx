@@ -1,11 +1,21 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../../store';
 import {
   FileText, Clock, CheckCircle, XCircle, Search, ChevronRight,
   UserCircle, GraduationCap, ArrowUpRight,
+  Sun, Moon, CloudSun, MapPin, Camera,
 } from 'lucide-react';
 import ucnShield from '../../assets/LogoUCN_acentuado.png';
-import escuelaLogo from '../../assets/Logo Escuela Ingeniería.svg';
+
+const WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const MONTHS   = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+function getGreeting(h: number) {
+  if (h >= 5  && h < 12) return { label: 'Buenos días',   Icon: Sun };
+  if (h >= 12 && h < 19) return { label: 'Buenas tardes', Icon: CloudSun };
+  return                       { label: 'Buenas noches', Icon: Moon };
+}
 
 // UCN Brand colors (Guía de Normas Gráficas Institucionales):
 // Pantone 652 C → #7E9BC0  (azul institucional)
@@ -50,6 +60,7 @@ export default function StudentDashboard() {
   const recentApps = [...myApps].sort((a, b) => b.appliedAt.localeCompare(a.appliedAt)).slice(0, 3);
 
   const firstName = currentUser?.name.split(' ')[0];
+  const initials = currentUser?.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() ?? '?';
 
   const stats = [
     {
@@ -92,13 +103,30 @@ export default function StudentDashboard() {
 
   const profileIncomplete = profile && (!profile.bio || !profile.rut);
 
+  // Reloj en vivo para el widget del hero (refresca cada minuto).
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const { label: greeting, Icon: GreetingIcon } = getGreeting(now.getHours());
+  const dateStr = `${WEEKDAYS[now.getDay()]}, ${now.getDate()} de ${MONTHS[now.getMonth()]}`;
+  const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
   return (
     <div className="min-h-full bg-gradient-to-br from-white via-gray-50/40 to-[#7E9BC0]/5">
       <div className="p-6 lg:p-10 max-w-6xl mx-auto animate-slide-up">
 
         {/* ── Hero institucional ───────────────────────────────── */}
+        {/*
+          La normativa UCN describe los azules del isotipo como "los cielos
+          nortinos, la posibilidad de tocar las estrellas y el mar". El hero
+          evoca esa idea con un cielo nocturno animado: gradiente profundo,
+          grilla y constelación de estrellas titilantes.
+        */}
         <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B1629] via-[#102040] to-[#081420] text-white mb-8 shadow-xl shadow-[#0B1629]/20">
-          <div className="absolute inset-0 bg-grid opacity-50" aria-hidden="true" />
+          <div className="absolute inset-0 bg-grid opacity-40" aria-hidden="true" />
           <div className="absolute -top-16 -left-12 w-72 h-72 bg-[#7E9BC0]/15 rounded-full blur-3xl animate-float" aria-hidden="true" />
           <div
             className="absolute -bottom-20 -right-10 w-80 h-80 bg-[#AC6D33]/12 rounded-full blur-3xl animate-float"
@@ -106,46 +134,137 @@ export default function StudentDashboard() {
             aria-hidden="true"
           />
 
-          <div className="relative z-10 px-6 sm:px-10 py-9 sm:py-11 flex flex-col lg:flex-row lg:items-center gap-7 lg:gap-10">
-            <div className="flex items-center gap-5 shrink-0">
-              <img
-                src={ucnShield}
-                alt="Universidad Católica del Norte"
-                className="h-16 w-16 lg:h-20 lg:w-20 object-contain drop-shadow-lg"
+          {/* Constelación: cielos nortinos */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+            {[
+              // Estrellas brillantes (4 con halo azul UCN)
+              { top: '15%', left: '12%', size: 5, delay: '0s',   bright: true },
+              { top: '42%', left: '78%', size: 5, delay: '0.8s', bright: true },
+              { top: '68%', left: '32%', size: 5, delay: '1.4s', bright: true },
+              { top: '25%', left: '92%', size: 5, delay: '0.4s', bright: true },
+              // Medianas
+              { top: '8%',  left: '28%', size: 3, delay: '0.3s' },
+              { top: '22%', left: '45%', size: 3, delay: '1.0s' },
+              { top: '32%', left: '8%',  size: 3, delay: '0.7s' },
+              { top: '38%', left: '58%', size: 3, delay: '1.6s' },
+              { top: '52%', left: '22%', size: 3, delay: '0.5s' },
+              { top: '60%', left: '85%', size: 3, delay: '1.3s' },
+              { top: '72%', left: '15%', size: 3, delay: '0.9s' },
+              { top: '80%', left: '52%', size: 3, delay: '0.2s' },
+              { top: '85%', left: '88%', size: 3, delay: '1.5s' },
+              { top: '12%', left: '62%', size: 3, delay: '1.1s' },
+              // Pequeñas (estrellas lejanas)
+              { top: '5%',  left: '50%', size: 2, delay: '0.6s' },
+              { top: '18%', left: '72%', size: 2, delay: '1.2s' },
+              { top: '28%', left: '32%', size: 2, delay: '1.7s' },
+              { top: '45%', left: '95%', size: 2, delay: '0.4s' },
+              { top: '55%', left: '40%', size: 2, delay: '0.8s' },
+              { top: '62%', left: '5%',  size: 2, delay: '1.4s' },
+              { top: '65%', left: '68%', size: 2, delay: '0.1s' },
+              { top: '75%', left: '92%', size: 2, delay: '1.0s' },
+              { top: '78%', left: '40%', size: 2, delay: '0.5s' },
+              { top: '88%', left: '20%', size: 2, delay: '1.3s' },
+              { top: '92%', left: '65%', size: 2, delay: '0.7s' },
+              { top: '38%', left: '38%', size: 2, delay: '1.6s' },
+              { top: '48%', left: '52%', size: 2, delay: '0.9s' },
+              { top: '70%', left: '75%', size: 2, delay: '1.2s' },
+            ].map((s, i) => (
+              <span
+                key={i}
+                className="absolute rounded-full bg-white animate-pulse"
+                style={{
+                  top: s.top,
+                  left: s.left,
+                  width: `${s.size}px`,
+                  height: `${s.size}px`,
+                  opacity: s.bright ? 0.95 : 0.55 + (s.size - 2) * 0.15,
+                  boxShadow: s.bright
+                    ? '0 0 12px rgba(255,255,255,0.95), 0 0 22px rgba(126,155,192,0.55)'
+                    : '0 0 6px rgba(255,255,255,0.7)',
+                  animationDelay: s.delay,
+                  animationDuration: s.bright ? '2.8s' : '3.5s',
+                }}
               />
-              <div className="leading-snug">
-                <p className="text-white font-light text-lg lg:text-xl">Universidad</p>
-                <p className="text-white font-light text-lg lg:text-xl">Católica del Norte</p>
-                <p className="text-[#7E9BC0] text-[10px] font-semibold tracking-[0.2em] uppercase mt-1">
-                  Plataforma de Ayudantías
+            ))}
+          </div>
+
+          <div className="relative z-10 px-6 sm:px-10 py-9 sm:py-11 flex flex-col lg:flex-row lg:items-center gap-8">
+
+            {/* Avatar mockup (foto de perfil) + saludo */}
+            <div className="flex items-center gap-5 lg:gap-6 flex-1 min-w-0">
+
+              {/* Foto de perfil — placeholder, se conectará desde Mi Perfil */}
+              <div className="relative shrink-0">
+                <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-[#7E9BC0] to-[#2B5C8A] flex items-center justify-center text-white text-2xl lg:text-3xl font-bold ring-4 ring-white/10 shadow-xl shadow-[#7E9BC0]/30 select-none">
+                  {initials}
+                </div>
+                <Link
+                  to="/student/profile"
+                  className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center hover:bg-white/25 transition-colors"
+                  title="Próximamente: editar foto de perfil"
+                  aria-label="Editar perfil"
+                >
+                  <Camera size={12} className="text-white/85" />
+                </Link>
+              </div>
+
+              {/* Saludo */}
+              <div className="min-w-0 flex-1">
+                <p className="text-[#7E9BC0] text-[11px] font-semibold tracking-[0.25em] uppercase mb-2">
+                  Plataforma de Ayudantías · UCN
+                </p>
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">
+                  Bienvenido/a,{' '}
+                  <span className="bg-gradient-to-r from-[#7E9BC0] to-[#CAA987] bg-clip-text text-transparent">
+                    {firstName}
+                  </span>
+                </h1>
+                <p className="text-gray-300 text-sm lg:text-base mt-2 max-w-xl">
+                  {profile?.career
+                    ? <>
+                        <span className="text-white/90 font-medium">{profile.career}</span>
+                        {profile.year ? ` · ${profile.year}° año` : ''} — explora ayudantías abiertas y haz seguimiento de tus postulaciones.
+                      </>
+                    : 'Completa tu perfil para empezar a postular a las ayudantías abiertas en la UCN.'}
                 </p>
               </div>
             </div>
 
-            <div className="hidden lg:block w-px self-stretch bg-white/10" aria-hidden="true" />
+            {/* Widget cielo nortino: fecha · hora local */}
+            <div className="lg:w-72 shrink-0">
+              <div className="relative rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm p-5 overflow-hidden">
+                <div
+                  className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-2xl"
+                  style={{ background: 'radial-gradient(circle, rgba(126,155,192,0.35), transparent 70%)' }}
+                  aria-hidden="true"
+                />
+                <div className="relative flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7E9BC0]/30 to-[#AC6D33]/25 flex items-center justify-center border border-white/15 shrink-0">
+                    <GreetingIcon size={18} className="text-[#CAA987]" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#7E9BC0]">{greeting}</p>
+                    <p className="text-white text-[13px] font-medium truncate">{dateStr}</p>
+                  </div>
+                </div>
 
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">
-                Bienvenido/a,{' '}
-                <span className="bg-gradient-to-r from-[#7E9BC0] to-[#CAA987] bg-clip-text text-transparent">
-                  {firstName}
-                </span>
-              </h1>
-              <p className="text-gray-300 text-sm lg:text-base mt-2 max-w-xl">
-                {profile?.career
-                  ? <>
-                      <span className="text-white/90 font-medium">{profile.career}</span>
-                      {profile.year ? ` · ${profile.year}° año` : ''} — explora ayudantías abiertas y haz seguimiento de tus postulaciones.
-                    </>
-                  : 'Completa tu perfil para empezar a postular a las ayudantías abiertas en la UCN.'}
-              </p>
+                <div className="relative flex items-baseline gap-2 mb-4">
+                  <p className="text-4xl font-bold text-white tracking-tight tabular-nums leading-none">
+                    {timeStr}
+                  </p>
+                  <p className="text-[10px] text-white/45 uppercase tracking-wider">hrs</p>
+                </div>
+
+                <div className="relative flex items-center gap-2 pt-3 border-t border-white/10">
+                  <MapPin size={11} className="text-[#7E9BC0]" />
+                  <p className="text-[10px] text-white/55 tracking-wide">Antofagasta · Norte de Chile</p>
+                  <span className="ml-auto relative flex h-1.5 w-1.5" aria-label="Plataforma operativa">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
+                  </span>
+                </div>
+              </div>
             </div>
-
-            <img
-              src={escuelaLogo}
-              alt="Escuela de Ingeniería UCN"
-              className="hidden xl:block h-12 object-contain brightness-0 invert opacity-70 shrink-0"
-            />
           </div>
         </section>
 
@@ -317,7 +436,7 @@ export default function StudentDashboard() {
 
               <dl className="mt-5 grid grid-cols-2 gap-3">
                 <div className="rounded-xl border border-gray-100 bg-[#7E9BC0]/5 px-3 py-2.5">
-                  <dt className="text-[10px] font-semibold uppercase tracking-wider text-[#2B5C8A]">Promedio</dt>
+                  <dt className="text-[10px] font-semibold uppercase tracking-wider text-[#2B5C8A]">PPA</dt>
                   <dd className="text-sm font-bold text-gray-900 mt-0.5">
                     {profile?.gpa ? profile.gpa.toFixed(1) : '—'}
                   </dd>
