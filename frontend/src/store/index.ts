@@ -285,6 +285,32 @@ export const useStore = create<AppState>()(
       reopenAyudantia: (id) =>
         set(s => ({ ayudantias: s.ayudantias.map(ay => ay.id === id ? { ...ay, status: 'open', closedAt: undefined } : ay) })),
     }),
-    { name: 'ucn-ayudantias' },
+    {
+      name: 'ucn-ayudantias',
+      version: 2,
+      // Garantiza que los usuarios mock (incluido el admin) estén siempre
+      // disponibles aunque el navegador tenga estado persistido de versiones
+      // previas. Conserva además las cuentas creadas en runtime (register).
+      migrate: (persistedState, _version) => {
+        const s = (persistedState ?? {}) as Partial<AppState>;
+        const byId = new Map<string, User>();
+        MOCK_USERS.forEach(u => byId.set(u.id, u));
+        (s.users ?? []).forEach(u => {
+          if (!byId.has(u.id)) byId.set(u.id, u);
+        });
+        return { ...s, users: Array.from(byId.values()) };
+      },
+      merge: (persistedState, currentState) => {
+        const persisted = (persistedState ?? {}) as Partial<AppState>;
+        const merged = { ...currentState, ...persisted } as AppState;
+        const byId = new Map<string, User>();
+        MOCK_USERS.forEach(u => byId.set(u.id, u));
+        (persisted.users ?? []).forEach(u => {
+          if (!byId.has(u.id)) byId.set(u.id, u);
+        });
+        merged.users = Array.from(byId.values());
+        return merged;
+      },
+    },
   ),
 );
