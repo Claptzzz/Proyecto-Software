@@ -19,6 +19,7 @@ const professorLinks = [
 
 const adminLinks = [
   { to: '/admin/dashboard', label: 'Panel Control', icon: LayoutDashboard },
+  { to: '/admin/gestion', label: 'Gestionar Ayudantías', icon: FileText },
 ];
 
 export default function Layout() {

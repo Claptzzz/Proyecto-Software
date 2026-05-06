@@ -13,6 +13,7 @@ import MisRamos from './pages/professor/MisRamos';
 import GestionAyudantia from './pages/professor/GestionAyudantia';
 
 import AdminDashboard from './pages/admin/dashboard';
+import AdminGestion from './pages/admin/gestion';
 
 function RequireStudent() {
   const currentUser = useStore(s => s.currentUser);
@@ -110,6 +111,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <Navigate to="dashboard" replace /> },
           { path: 'dashboard', element: <AdminDashboard /> },
+          { path: 'gestion', element: <AdminGestion /> },
         ],
       },
     ],

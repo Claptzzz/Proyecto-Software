@@ -1,8 +1,7 @@
+import { Link } from 'react-router-dom';
 import { useStore } from '../../store';
 import { 
-  Users, 
-  FileCheck, 
-  Activity, 
+  FileCheck,  
   ClipboardList,
   CheckCircle,
   XCircle,
@@ -18,16 +17,16 @@ export default function AdminDashboard() {
 
   const stats = [
     {
+      label: 'Postulaciones Totales',
+      value: applications.length,
+      icon: ClipboardList,
+      color: 'bg-[#AC6D33]',
+    },
+    {
       label: 'Postulaciones Pendientes',
       value: applications.filter(a => a.status === 'pending').length,
       icon: Clock,
       color: 'bg-[#7E9BC0]',
-    },
-    {
-      label: 'Ayudantes Activos',
-      value: ayudantias.reduce((acc, ay) => acc + ay.assignedStudents.length, 0),
-      icon: Users,
-      color: 'bg-[#AC6D33]',
     },
     {
       label: 'Ayudantes Aceptados',
@@ -85,7 +84,7 @@ export default function AdminDashboard() {
             <ClipboardList className="text-[#AC6D33]" size={20} />
             <h2 className="text-lg font-bold text-slate-900">Gestión de Postulaciones</h2>
           </div>
-          <button className="text-sm font-semibold text-[#7E9BC0] hover:underline">Ver todas</button>
+          <Link to="/admin/gestion" className="text-sm font-semibold text-[#7E9BC0] hover:underline">Ver todas</Link>
         </div>
 
         <div className="overflow-x-auto">
