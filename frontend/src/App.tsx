@@ -14,6 +14,7 @@ import GestionAyudantia from './pages/professor/GestionAyudantia';
 
 import AdminDashboard from './pages/admin/dashboard';
 import AdminGestion from './pages/admin/gestion';
+import AdminMetricas from './pages/admin/metricas';
 
 function RequireStudent() {
   const currentUser = useStore(s => s.currentUser);
@@ -112,6 +113,7 @@ const router = createBrowserRouter([
           { index: true, element: <Navigate to="dashboard" replace /> },
           { path: 'dashboard', element: <AdminDashboard /> },
           { path: 'gestion', element: <AdminGestion /> },
+          { path: 'metricas', element: <AdminMetricas /> },
         ],
       },
     ],

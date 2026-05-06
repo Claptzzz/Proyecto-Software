@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from '../../store';
 import {
   LayoutDashboard, User, Search, FileText,
-  BookOpen, LogOut, GraduationCap,
+  BookOpen, LogOut, GraduationCap, BarChart3,
 } from 'lucide-react';
 
 const studentLinks = [
@@ -20,6 +20,7 @@ const professorLinks = [
 const adminLinks = [
   { to: '/admin/dashboard', label: 'Panel Control', icon: LayoutDashboard },
   { to: '/admin/gestion', label: 'Gestionar Ayudantías', icon: FileText },
+  { to: '/admin/metricas', label: 'Métricas', icon: BarChart3 },
 ];
 
 export default function Layout() {

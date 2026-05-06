@@ -5,7 +5,8 @@ import {
   Search,
   Filter,
   MoreVertical,
-  Clock
+  Clock,
+  Megaphone
 } from 'lucide-react';
 
 export default function AdminGestion() {
@@ -30,10 +31,16 @@ export default function AdminGestion() {
           <h1 className="text-3xl font-bold text-slate-900">Gestión de Ayudantías</h1>
           <p className="text-slate-500 mt-2">Administra todas las ofertas de ayudantía disponibles en la plataforma.</p>
         </div>
-        <button className="flex items-center gap-2 bg-[#AC6D33] hover:bg-[#8B5226] text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-lg shadow-[#AC6D33]/20 self-start">
-          <Plus size={20} />
-          Nueva Ayudantía
-        </button>
+        <div className="flex items-center gap-3 self-start">
+          <button className="flex items-center gap-2 bg-[#7E9BC0] hover:bg-[#6a84a5] text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-lg shadow-[#7E9BC0]/20">
+            <Megaphone size={20} />
+            Abrir convocatoria
+          </button>
+          <button className="flex items-center gap-2 bg-[#AC6D33] hover:bg-[#8B5226] text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-lg shadow-[#AC6D33]/20">
+            <Plus size={20} />
+            Nueva Ayudantía
+          </button>
+        </div>
       </header>
 
       {/* Filters & Search */}
