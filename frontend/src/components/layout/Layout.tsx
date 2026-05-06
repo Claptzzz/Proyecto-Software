@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from '../../store';
 import {
   LayoutDashboard, User, Search, FileText,
-  BookOpen, LogOut,
+  BookOpen, LogOut, GraduationCap, BarChart3,
 } from 'lucide-react';
 import ucnShield from '../../assets/LogoUCN_acentuado.png';
 import escuelaLogo from '../../assets/Logo Escuela Ingeniería.svg';
@@ -28,6 +28,8 @@ const professorLinks = [
 
 const adminLinks = [
   { to: '/admin/dashboard', label: 'Panel Control', icon: LayoutDashboard },
+  { to: '/admin/gestion', label: 'Gestionar Ayudantías', icon: FileText },
+  { to: '/admin/metricas', label: 'Métricas', icon: BarChart3 },
 ];
 
 type RoleAccent = {

@@ -1,13 +1,14 @@
+import { Link } from 'react-router-dom';
 import { useStore } from '../../store';
 import { 
-  Users, 
-  FileCheck, 
-  Activity, 
+  FileCheck,   
   ClipboardList,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  BookCheck
 } from 'lucide-react';
+import ucnShield from '../../assets/LogoUCN_acentuado.png';
 
 // UCN Brand colors:
 // Azul institucional: #7E9BC0
@@ -16,7 +17,18 @@ import {
 export default function AdminDashboard() {
   const { applications, users, ayudantias } = useStore();
 
+  const ayudantiasListas = ayudantias.filter(ay => {
+    const acceptedCount = applications.filter(app => app.ayudantiaId === ay.id && app.status === 'accepted').length;
+    return acceptedCount >= ay.maxAssistants;
+  }).length;
+
   const stats = [
+    {
+      label: 'Postulaciones Totales',
+      value: applications.length,
+      icon: ClipboardList,
+      color: 'bg-[#AC6D33]',
+    },
     {
       label: 'Postulaciones Pendientes',
       value: applications.filter(a => a.status === 'pending').length,
@@ -24,16 +36,16 @@ export default function AdminDashboard() {
       color: 'bg-[#7E9BC0]',
     },
     {
-      label: 'Ayudantes Activos',
-      value: ayudantias.reduce((acc, ay) => acc + ay.assignedStudents.length, 0),
-      icon: Users,
-      color: 'bg-[#AC6D33]',
-    },
-    {
       label: 'Ayudantes Aceptados',
       value: applications.filter(a => a.status === 'accepted').length,
       icon: FileCheck,
       color: 'bg-green-600',
+    },
+    {
+      label: 'Ayudantias listas',
+      value: `${ayudantiasListas} / ${ayudantias.length}`,
+      icon: BookCheck,
+      color: 'bg-indigo-600',
     },
   ];
 
@@ -64,7 +76,7 @@ export default function AdminDashboard() {
       </header>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         {stats.map((stat) => (
           <div key={stat.label} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex items-center gap-5 transition-transform hover:scale-[1.02]">
             <div className={`w-14 h-14 rounded-xl ${stat.color} flex items-center justify-center text-white shadow-lg`}>
@@ -79,13 +91,13 @@ export default function AdminDashboard() {
       </div>
 
       {/* TA Management Section */}
-      <section className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <section className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-10">
         <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ClipboardList className="text-[#AC6D33]" size={20} />
             <h2 className="text-lg font-bold text-slate-900">Gestión de Postulaciones</h2>
           </div>
-          <button className="text-sm font-semibold text-[#7E9BC0] hover:underline">Ver todas</button>
+          <Link to="/admin/gestion" className="text-sm font-semibold text-[#7E9BC0] hover:underline">Ver todas</Link>
         </div>
 
         <div className="overflow-x-auto">
@@ -124,6 +136,12 @@ export default function AdminDashboard() {
           </table>
         </div>
       </section>
+
+      {/* ── Footer institucional sutil ───────────────────────── */}
+      <div className="mt-10 pt-6 border-t border-gray-200/70 flex items-center gap-2 text-[11px] text-gray-400">
+        <img src={ucnShield} alt="" className="h-5 w-5 object-contain opacity-60" aria-hidden="true" />
+        <span className="tracking-wider uppercase font-semibold">Universidad Católica del Norte · Plataforma de Ayudantías</span>
+      </div>
     </div>
   );
 }
